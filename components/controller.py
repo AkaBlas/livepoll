@@ -2,7 +2,7 @@ import asyncio
 import logging
 from collections.abc import Awaitable, Mapping
 from types import MappingProxyType
-from typing import Any, TypeVar
+from typing import Any, Optional, TypeVar, Union
 
 import uvicorn
 from fastapi import FastAPI
@@ -35,7 +35,7 @@ class Controller:
 
         self._polls: dict[str, Poll] = {}
         self.polls: Mapping[str, Poll] = MappingProxyType(self._polls)
-        self._active_poll: Poll | None = None
+        self._active_poll: Optional[Poll] = None
 
         self._running = False
         self._spawned_tasks: set[asyncio.Task] = set()
@@ -45,7 +45,7 @@ class Controller:
         return self._running
 
     @property
-    def active_poll(self) -> Poll | None:
+    def active_poll(self) -> Optional[Poll]:
         return self._active_poll
 
     @property
@@ -53,7 +53,7 @@ class Controller:
         return self._active_poll is None
 
     async def update_active_poll(
-        self, poll: Poll | str, exclude_websocket: WebSocket | None = None
+        self, poll: Union[Poll, str], exclude_websocket: Optional[WebSocket] = None
     ) -> None:
         if isinstance(poll, str):
             if (effective_poll := self.polls.get(poll)) is None:
@@ -69,11 +69,11 @@ class Controller:
             self._polls[effective_poll.uid] = effective_poll
             self.create_task(self.persistence.update_poll(effective_poll))
 
-        self.create_task(self.websocket_manager.broadcast_active_poll(
-            effective_poll, exclude=exclude_websocket
-        ))
+        self.create_task(
+            self.websocket_manager.broadcast_active_poll(effective_poll, exclude=exclude_websocket)
+        )
 
-    async def stop_active_poll(self, exclude_websocket: WebSocket | None = None) -> None:
+    async def stop_active_poll(self, exclude_websocket: Optional[WebSocket] = None) -> None:
         self._active_poll = None
         self.create_task(self.websocket_manager.broadcast_idle(exclude_websocket))
 
@@ -115,7 +115,7 @@ class Controller:
     def create_task(
         self,
         coroutine: Awaitable[_RT],
-        name: str | None = None,
+        name: Optional[str] = None,
     ) -> "asyncio.Task[_RT]":
         task = asyncio.create_task(
             self.__create_task_callback(coroutine), name=name or repr(coroutine)

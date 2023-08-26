@@ -1,5 +1,6 @@
 import logging
 import uuid
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -20,7 +21,7 @@ class PollOption(BaseModel):
 class PollVote(BaseModel):
     poll_uid: str
     option_uid: str
-    previous_option_uid: str | None = None
+    previous_option_uid: Optional[str] = None
 
 
 class Poll(BaseModel):

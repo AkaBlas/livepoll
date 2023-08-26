@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any
+from typing import Any, Optional
 
 from starlette.websockets import WebSocket
 
@@ -18,13 +18,13 @@ class WebSocketManager:
     async def disconnect(self, websocket: WebSocket) -> None:
         self.active_connections.discard(websocket)
 
-    async def broadcast_active_poll(self, poll: Poll, exclude: WebSocket | None = None) -> None:
+    async def broadcast_active_poll(self, poll: Poll, exclude: Optional[WebSocket] = None) -> None:
         return await self.broadcast_json({"active_poll": poll.model_dump()}, exclude=exclude)
 
-    async def broadcast_idle(self, exclude: WebSocket | None = None) -> None:
+    async def broadcast_idle(self, exclude: Optional[WebSocket] = None) -> None:
         return await self.broadcast_json({"idle": True}, exclude=exclude)
 
-    async def broadcast_json(self, json: Any, exclude: WebSocket | None = None) -> None:
+    async def broadcast_json(self, json: Any, exclude: Optional[WebSocket] = None) -> None:
         async with self.__lock:
             await asyncio.gather(
                 *(

@@ -1,7 +1,7 @@
 import json
 import logging
 from http import HTTPStatus
-from typing import TYPE_CHECKING, Annotated, Literal
+from typing import TYPE_CHECKING, Annotated, Literal, Optional, Union
 
 from fastapi import Cookie, HTTPException
 from pydantic_core import ValidationError
@@ -32,7 +32,7 @@ class API:
         self._controller.fast_api.get("/")(self.static_page)
 
     def static_page(
-        self, request: Request, poll_votes: Annotated[str | None, Cookie()] = None
+        self, request: Request, poll_votes: Annotated[Optional[str], Cookie()] = None
     ) -> Response:
         poll_votes_object = PollCookie(poll_votes=json.loads(poll_votes) if poll_votes else {})
 
@@ -61,7 +61,7 @@ class API:
         await self._controller.stop_active_poll()
         return True
 
-    async def update_poll(self, poll: Poll | str) -> Literal[True]:
+    async def update_poll(self, poll: Union[Poll, str]) -> Literal[True]:
         await self._controller.update_active_poll(poll)
         return True
 
