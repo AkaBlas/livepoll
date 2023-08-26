@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>AkaBlas Wunschkonzert</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/static/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/static/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="/static/favicon/favicon.ico">
+    <meta name="apple-mobile-web-app-title" content="AkaBlas Wunschkonzert">
+    <meta name="application-name" content="AkaBlas Wunschkonzert">
+    <meta name="msapplication-TileColor" content="#001555">
+    <meta name="msapplication-config" content="/static/favicon/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    {#    <link href="{{ url_for('static', path='/styles/normalize.min.css') }}" rel="stylesheet"/>#}
+    {#    <link href="{{ url_for('static', path='/styles/style.css') }}" rel="stylesheet"/>#}
+    {#    <link href="{{ url_for('static', path='/styles/alarms.css') }}" rel="stylesheet"/>#}
+    {#    <link href="{{ url_for('static', path='/styles/lightbulbtoggle.css') }}" rel="stylesheet"/>#}
+    {#    <link href="{{ url_for('static', path='/styles/onoffswtich.css') }}" rel="stylesheet"/>#}
+    {#    <link href="{{ url_for('static', path='/styles/fixed-picker.css') }}" rel="stylesheet"/>#}
+    {#    <link href="{{ url_for('static', path='/iconfont/icons.css') }}" rel="stylesheet"/>#}
+</head>
+<body>
+<div id="active-poll" style="display: {{ 'block' if active_poll is not none else 'none' }}">
+    {% set poll_uid = active_poll.uid if active_poll is not none else '' %}
+    <div>
+        <h1 id="active-poll-question">{{ active_poll.question }}</h1>
+    </div>
+    <div>
+        {% set checked = 'checked' if active_poll is not none and active_poll.option_one.uid == current_option_uid else '' %}
+        {% set text = active_poll.option_one.text if active_poll is not none  else 'option_one' %}
+        {% set votes = active_poll.option_one.votes if active_poll is not none  else '' %}
+        {% set uid = active_poll.option_one.uid if active_poll is not none  else '' %}
+        <input type="radio" id="option_one" name="poll_options"
+               value={{ uid }} onChange="sendVote('{{ poll_uid }}')" {{ checked }}>
+        <label id="option_one_label" for="option_one">{{ text }}, Stimmen: {{ votes }}</label>
+        {% set checked = 'checked' if active_poll is not none and active_poll.option_two.uid == current_option_uid else '' %}
+        {% set text = active_poll.option_two.text if active_poll is not none  else 'option_two' %}
+        {% set votes = active_poll.option_two.votes if active_poll is not none  else '' %}
+        {% set uid = active_poll.option_two.uid if active_poll is not none  else '' %}
+        <input type="radio" id="option_two" name="poll_options"
+               value={{ uid }} onChange="sendVote('{{ poll_uid }}')" {{ checked }}>
+        <label id="option_two_label" for="option_two">{{ text }}, Stimmen: {{ votes }}</label>
+    </div>
+</div>
+
+<div id="idle" style="display: {{ 'block' if active_poll is none else 'none' }}">
+    <span>"Nothing to see here, yet".</span>
+</div>
+</body>
+<script src="{{ url_for('static', path='./scripts/commons.js') }}"></script>
+<script src="{{ url_for('static', path='./scripts/cookies.js') }}"></script>
+<script src="{{ url_for('static', path='./scripts/script.js') }}"></script>
+<script src="{{ url_for('static', path='./scripts/websocket-listen.js') }}"></script>
+</html>
