@@ -29,9 +29,10 @@ class API:
             self.update_poll
         )
         self._controller.fast_api.websocket("/websocket")(self.web_socket)
-        self._controller.fast_api.get("/")(self.static_page)
+        self._controller.fast_api.get("/")(self.index_page)
+        self._controller.fast_api.get("/activepoll")(self.active_poll_page)
 
-    def static_page(
+    def index_page(
         self, request: Request, poll_votes: Annotated[Optional[str], Cookie()] = None
     ) -> Response:
         poll_votes_object = PollCookie(poll_votes=json.loads(poll_votes) if poll_votes else {})
@@ -49,6 +50,15 @@ class API:
                 "request": request,
                 "active_poll": active_poll,
                 "current_option_uid": current_option_uid,
+            },
+        )
+
+    def active_poll_page(self, request: Request) -> Response:
+        return Jinja2Templates(directory="static").TemplateResponse(
+            "activepoll.html.jinja2",
+            context={
+                "request": request,
+                "active_poll": self._controller.active_poll,
             },
         )
 

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>AkaBlas Wunschkonzert</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/static/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/static/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="/static/favicon/favicon.ico">
+    <meta name="apple-mobile-web-app-title" content="AkaBlas Wunschkonzert">
+    <meta name="application-name" content="AkaBlas Wunschkonzert">
+    <meta name="msapplication-TileColor" content="#001555">
+    <meta name="msapplication-config" content="/static/favicon/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+{% set condition = active_poll is not none %}
+<div id="idle" style="display: {{ 'none' if condition else 'block' }}">
+    <h1>Derzeit keine Abstimmung aktiv</h1>
+</div>
+<div id="active-poll" style="display: {{ 'block' if condition else 'none' }}">
+    <h1 id="active-poll-question">{{ active_poll.question if condition else '' }}</h1>
+    <div style="display: flex">
+        <div id="option-one" style="padding: 10px">
+            <div id="option-one-text">{{ active_poll.option_one.text if condition else '' }}</div>
+            <div id="option-one-votes">{{ active_poll.option_one.votes if condition else '' }}</div>
+        </div>
+        <div id="option-two" style="padding: 10px">
+            <div id="option-two-text">{{ active_poll.option_two.text if condition else '' }}</div>
+            <div id="option-two-votes">{{ active_poll.option_two.votes if condition else '' }}</div>
+        </div>
+    </div>
+</div>
+<button id="refresh" onclick="refreshActivePoll()">Aktualisieren</button>
+</body>
+<script src="{{ url_for('static', path='./scripts/commons.js') }}"></script>
+<script src="{{ url_for('static', path='./scripts/activepoll.js') }}"></script>
+</html>
