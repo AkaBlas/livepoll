@@ -1,11 +1,4 @@
-WSocket.onclose = function (event) {
-  console.log(event.toString());
-  alert("Lost connection to server. Please reload the page.");
-};
-WSocket.onerror = function (event) {
-  console.log(event.toString());
-  alert("Error in connection to server. Please reload the page.");
-};
+const WSocket = build_websocket("websocketVoting");
 
 WSocket.onmessage = function (event) {
   const jsonData = JSON.parse(event.data);
@@ -46,5 +39,10 @@ WSocket.onmessage = function (event) {
     document.getElementById("option_two").checked =
       pollCookie.getCurrentOptionID(jsonData.active_poll.uid) ===
       jsonData.active_poll.option_two.uid;
+    if (pollCookie.getCurrentOptionID(jsonData.active_poll.uid) !== "") {
+      document.getElementById("thanks").style.display = "block";
+    } else {
+      document.getElementById("thanks").style.display = "none";
+    }
   }
 };

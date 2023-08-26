@@ -30,7 +30,8 @@ class Controller:
             docs_url="/docs" if debug_mode else None,
         )
         self.api = API(self)
-        self.websocket_manager = WebSocketManager()
+        self.ws_manager_voting = WebSocketManager()
+        self.ws_manager_results = WebSocketManager()
         self.persistence: JSONPersistence = persistence
 
         self._polls: dict[str, Poll] = {}
@@ -70,12 +71,12 @@ class Controller:
             self.create_task(self.persistence.update_poll(effective_poll))
 
         self.create_task(
-            self.websocket_manager.broadcast_active_poll(effective_poll, exclude=exclude_websocket)
+            self.ws_manager_voting.broadcast_active_poll(effective_poll, exclude=exclude_websocket)
         )
 
     async def stop_active_poll(self, exclude_websocket: Optional[WebSocket] = None) -> None:
         self._active_poll = None
-        self.create_task(self.websocket_manager.broadcast_idle(exclude_websocket))
+        self.create_task(self.ws_manager_voting.broadcast_idle(exclude_websocket))
 
     async def add_poll_vote(self, poll_vote: PollVote) -> None:
         if (poll := self.polls.get(poll_vote.poll_uid)) is None:

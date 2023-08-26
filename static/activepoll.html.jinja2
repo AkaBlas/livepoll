@@ -17,12 +17,13 @@
     <meta name="theme-color" content="#ffffff">
 </head>
 <body>
+<h1>AkaBlas Wunschkonzert: Ergebnis</h1>
 {% set condition = active_poll is not none %}
 <div id="idle" style="display: {{ 'none' if condition else 'block' }}">
-    <h1>Derzeit keine Abstimmung aktiv</h1>
+    <h2>Aktuell ist keine Abstimmung aktiv.</h2>
 </div>
 <div id="active-poll" style="display: {{ 'block' if condition else 'none' }}">
-    <h1 id="active-poll-question">{{ active_poll.question if condition else '' }}</h1>
+    <h2 id="active-poll-question">{{ active_poll.question if condition else '' }}</h2>
     <div style="display: flex">
         <div id="option-one" style="padding: 10px">
             <div id="option-one-text">{{ active_poll.option_one.text if condition else '' }}</div>
@@ -34,8 +35,7 @@
         </div>
     </div>
 </div>
-<button id="refresh" onclick="refreshActivePoll()">Aktualisieren</button>
 </body>
 <script src="{{ url_for('static', path='./scripts/commons.js') }}"></script>
-<script src="{{ url_for('static', path='./scripts/activepoll.js') }}"></script>
+<script src="{{ url_for('static', path='./scripts/activepoll/websocket-listen.js') }}"></script>
 </html>

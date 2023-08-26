@@ -28,7 +28,11 @@ class API:
         self._controller.fast_api.put("/api/updatePoll", response_model=Literal[True])(
             self.update_poll
         )
-        self._controller.fast_api.websocket("/websocket")(self.web_socket)
+        self._controller.fast_api.put("/api/refreshActivePollPage")(self.refresh_active_poll_page)
+
+        self._controller.fast_api.websocket("/websocketVoting")(self.web_socket_voting)
+        self._controller.fast_api.websocket("/websocketResults")(self.web_socket_results)
+
         self._controller.fast_api.get("/")(self.index_page)
         self._controller.fast_api.get("/activepoll")(self.active_poll_page)
 
@@ -44,6 +48,7 @@ class API:
         else:
             current_option_uid = None
 
+        print("current_option_uid", current_option_uid)
         return Jinja2Templates(directory="static").TemplateResponse(
             "index.html.jinja2",
             context={
@@ -75,14 +80,22 @@ class API:
         await self._controller.update_active_poll(poll)
         return True
 
+    async def refresh_active_poll_page(self) -> None:
+        if self._controller.active_poll is None:
+            await self._controller.ws_manager_results.broadcast_idle()
+            return
+        await self._controller.ws_manager_results.broadcast_active_poll(
+            self._controller.active_poll
+        )
+
     async def _handle_websocket_disconnect(self, websocket: WebSocket) -> None:
-        await self._controller.websocket_manager.disconnect(websocket)
+        await self._controller.ws_manager_voting.disconnect(websocket)
 
     async def _handle_websocket_add_poll_vote(self, poll_vote: PollVote) -> None:
         await self._controller.add_poll_vote(poll_vote)
 
-    async def web_socket(self, websocket: WebSocket) -> None:
-        await self._controller.websocket_manager.connect(websocket)
+    async def web_socket_voting(self, websocket: WebSocket) -> None:
+        await self._controller.ws_manager_voting.connect(websocket)
         try:
             while True:
                 json_data = await websocket.receive_json()
@@ -100,5 +113,14 @@ class API:
                     await self._handle_websocket_add_poll_vote(poll_vote)
                 else:
                     _logger.warning("Websocket got unknown data `%s`. Ignoring.", json_data)
+        except WebSocketDisconnect:
+            await self._handle_websocket_disconnect(websocket)
+
+    async def web_socket_results(self, websocket: WebSocket) -> None:
+        await self._controller.ws_manager_results.connect(websocket)
+        try:
+            while True:
+                await websocket.receive_text()
+                await self.refresh_active_poll_page()
         except WebSocketDisconnect:
             await self._handle_websocket_disconnect(websocket)

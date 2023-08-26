@@ -17,35 +17,36 @@
     <meta name="theme-color" content="#ffffff">
 </head>
 <body>
+<h1>AkaBlas Wunschkonzert: Abstimmung</h1>
 <div id="active-poll" style="display: {{ 'block' if active_poll is not none else 'none' }}">
     {% set poll_uid = active_poll.uid if active_poll is not none else '' %}
     <div>
-        <h1 id="active-poll-question">{{ active_poll.question }}</h1>
+        <h2 id="active-poll-question">{{ active_poll.question }}</h2>
     </div>
     <div>
         {% set checked = 'checked' if active_poll is not none and active_poll.option_one.uid == current_option_uid else '' %}
         {% set text = active_poll.option_one.text if active_poll is not none  else 'option_one' %}
-        {% set votes = active_poll.option_one.votes if active_poll is not none  else '' %}
         {% set uid = active_poll.option_one.uid if active_poll is not none  else '' %}
         <input type="radio" id="option_one" name="poll_options"
                value={{ uid }} onChange="sendVote('{{ poll_uid }}')" {{ checked }}>
-        <label id="option_one_label" for="option_one">{{ text }}, Stimmen: {{ votes }}</label>
+        <label id="option_one_label" for="option_one">{{ text }}</label>
         {% set checked = 'checked' if active_poll is not none and active_poll.option_two.uid == current_option_uid else '' %}
         {% set text = active_poll.option_two.text if active_poll is not none  else 'option_two' %}
-        {% set votes = active_poll.option_two.votes if active_poll is not none  else '' %}
         {% set uid = active_poll.option_two.uid if active_poll is not none  else '' %}
         <input type="radio" id="option_two" name="poll_options"
                value={{ uid }} onChange="sendVote('{{ poll_uid }}')" {{ checked }}>
-        <label id="option_two_label" for="option_two">{{ text }}, Stimmen: {{ votes }}</label>
+        <label id="option_two_label" for="option_two">{{ text }}</label>
+        {% set voted = (current_option_uid is not none) %}
+        <h2 id="thanks" style="display: {{ 'block' if voted else 'none' }}">Vielen Dank für die Teilnahme!</h2>
     </div>
 </div>
 
 <div id="idle" style="display: {{ 'block' if active_poll is none else 'none' }}">
-    <span>"Nothing to see here, yet".</span>
+    <h2>Aktuell ist keine Abstimmung aktiv.</h2>
 </div>
 </body>
 <script src="{{ url_for('static', path='./scripts/commons.js') }}"></script>
-<script src="{{ url_for('static', path='./scripts/cookies.js') }}"></script>
-<script src="{{ url_for('static', path='./scripts/index.js') }}"></script>
-<script src="{{ url_for('static', path='./scripts/websocket-listen.js') }}"></script>
+<script src="{{ url_for('static', path='./scripts/index/cookies.js') }}"></script>
+<script src="{{ url_for('static', path='./scripts/index/index.js') }}"></script>
+<script src="{{ url_for('static', path='./scripts/index/websocket-listen.js') }}"></script>
 </html>
