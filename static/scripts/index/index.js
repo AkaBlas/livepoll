@@ -7,7 +7,7 @@ const optionTwoButton = document.getElementById("option_two");
 
 function sendVote(poll_uid) {
   pollCookie.addVote(poll_uid, getSelectedOption());
-  document.getElementById("thanks").style.display = "block";
+  document.getElementById("thanks").style.visibility = "inherit";
 }
 
 function getSelectedOption() {

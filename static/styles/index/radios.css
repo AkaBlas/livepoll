@@ -1,0 +1,154 @@
+* {
+  position: relative;
+}
+
+fieldset {
+  border: none;
+  margin: 0;
+  /*margin-top: 100px;*/
+  margin-bottom: 50px;
+  padding: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* radio */
+fieldset {
+  width: 100%;
+  text-align: center;
+  display: flex;
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+input[type="radio"] + label {
+  color: rgb(165, 181, 222);
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 100px;
+}
+
+input[type="radio"] + label::before {
+  transition: all 250ms cubic-bezier(0.4, 0.25, 0.3, 1);
+  content: "";
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgb(165, 181, 222);
+  border: 0px solid rgb(165, 181, 222);
+  font-size: 0;
+  position: absolute;
+  bottom: 275%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+input[type="radio"] + label::after {
+  transition: all 250ms cubic-bezier(0.4, 0.25, 0.3, 1);
+  content: "";
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background-color: rgb(165, 181, 222);
+  position: absolute;
+  bottom: 275%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+input[type="radio"]:checked + label::before {
+  background-color: transparent;
+  width: 40px;
+  height: 40px;
+  border-width: 2px;
+}
+
+input[type="radio"]:checked + label::after {
+  width: 30px;
+  height: 30px;
+}
+
+/* input */
+section.input-container label {
+  position: relative;
+  display: block;
+}
+
+section.input-container label input {
+  display: block;
+  padding: 20px;
+  width: 300px;
+  margin-bottom: 10px;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  background-color: rgb(165, 181, 222);
+  font-weight: bold;
+  color: #ff7975;
+}
+
+section.input-container label input::-moz-placeholder {
+  -moz-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  color: #d3d3d3;
+  font-weight: bold;
+}
+
+section.input-container label input:-ms-input-placeholder {
+  -ms-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  color: #d3d3d3;
+  font-weight: bold;
+}
+
+section.input-container label input::placeholder {
+  transition: all 0.2s ease-in-out;
+  color: #d3d3d3;
+  font-weight: bold;
+}
+
+section.input-container label input:focus,
+section.input-container label input.populated {
+  padding-top: 28px;
+  padding-bottom: 12px;
+}
+
+section.input-container label input:focus::-moz-placeholder,
+section.input-container label input.populated::-moz-placeholder {
+  color: transparent;
+}
+
+section.input-container label input:focus:-ms-input-placeholder,
+section.input-container label input.populated:-ms-input-placeholder {
+  color: transparent;
+}
+
+section.input-container label input:focus::placeholder,
+section.input-container label input.populated::placeholder {
+  color: transparent;
+}
+
+section.input-container label input:focus + span,
+section.input-container label input.populated + span {
+  opacity: 1;
+  top: 10px;
+}
+
+section.input-container label span {
+  font-size: 0.8rem;
+  color: #a9a9a9;
+  position: absolute;
+  top: 0px;
+  left: 20px;
+  opacity: 0;
+  transition: all 0.2s ease-in-out;
+}

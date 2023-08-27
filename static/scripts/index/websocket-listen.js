@@ -36,9 +36,9 @@ WSocket.onmessage = function (event) {
       pollCookie.getCurrentOptionID(jsonData.active_poll.uid) ===
       jsonData.active_poll.option_two.uid;
     if (pollCookie.getCurrentOptionID(jsonData.active_poll.uid) !== "") {
-      document.getElementById("thanks").style.display = "block";
+      document.getElementById("thanks").style.visibility = "inherit";
     } else {
-      document.getElementById("thanks").style.display = "none";
+      document.getElementById("thanks").style.visibility = "hidden";
     }
   }
 };
