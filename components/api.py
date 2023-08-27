@@ -11,6 +11,7 @@ from starlette.templating import Jinja2Templates
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from components.objects import Poll, PollCookie, PollVote
+from components.websocketmanager import WebSocketManager
 
 if TYPE_CHECKING:
     from components.controller import Controller
@@ -32,9 +33,11 @@ class API:
 
         self._controller.fast_api.websocket("/websocketVoting")(self.web_socket_voting)
         self._controller.fast_api.websocket("/websocketResults")(self.web_socket_results)
+        self._controller.fast_api.websocket("/websocketAdmin")(self.web_socket_admin)
 
         self._controller.fast_api.get("/")(self.index_page)
         self._controller.fast_api.get("/activepoll")(self.active_poll_page)
+        self._controller.fast_api.get("/admin")(self.admin_page)
 
     def index_page(
         self, request: Request, poll_votes: Annotated[Optional[str], Cookie()] = None
@@ -48,7 +51,6 @@ class API:
         else:
             current_option_uid = None
 
-        print("current_option_uid", current_option_uid)
         return Jinja2Templates(directory="static").TemplateResponse(
             "index.html.jinja2",
             context={
@@ -67,6 +69,16 @@ class API:
             },
         )
 
+    def admin_page(self, request: Request) -> Response:
+        return Jinja2Templates(directory="static").TemplateResponse(
+            "admin.html.jinja2",
+            context={
+                "request": request,
+                "active_poll": self._controller.active_poll,
+                "polls": self._controller.polls.values(),
+            },
+        )
+
     async def get_active_poll(self) -> Poll:
         if self._controller.active_poll is None:
             raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="No active poll")
@@ -74,10 +86,12 @@ class API:
 
     async def make_idle(self) -> Literal[True]:
         await self._controller.stop_active_poll()
+        self._controller.create_task(self.refresh_admin_page())
         return True
 
     async def update_poll(self, poll: Union[Poll, str]) -> Literal[True]:
         await self._controller.update_active_poll(poll)
+        self._controller.create_task(self.refresh_admin_page())
         return True
 
     async def refresh_active_poll_page(self) -> None:
@@ -88,11 +102,22 @@ class API:
             self._controller.active_poll
         )
 
-    async def _handle_websocket_disconnect(self, websocket: WebSocket) -> None:
-        await self._controller.ws_manager_voting.disconnect(websocket)
+    async def refresh_admin_page(self) -> None:
+        if self._controller.active_poll is None:
+            await self._controller.ws_manager_admin.broadcast_idle()
+            return
+        await self._controller.ws_manager_admin.broadcast_active_poll(self._controller.active_poll)
+
+    async def _handle_websocket_disconnect(
+        self, ws_manager: WebSocketManager, websocket: WebSocket
+    ) -> None:
+        await ws_manager.disconnect(websocket)
 
     async def _handle_websocket_add_poll_vote(self, poll_vote: PollVote) -> None:
         await self._controller.add_poll_vote(poll_vote)
+        await self._controller.ws_manager_admin.broadcast_poll_update(
+            self._controller.polls[poll_vote.poll_uid]
+        )
 
     async def web_socket_voting(self, websocket: WebSocket) -> None:
         await self._controller.ws_manager_voting.connect(websocket)
@@ -114,7 +139,7 @@ class API:
                 else:
                     _logger.warning("Websocket got unknown data `%s`. Ignoring.", json_data)
         except WebSocketDisconnect:
-            await self._handle_websocket_disconnect(websocket)
+            await self._handle_websocket_disconnect(self._controller.ws_manager_voting, websocket)
 
     async def web_socket_results(self, websocket: WebSocket) -> None:
         await self._controller.ws_manager_results.connect(websocket)
@@ -123,4 +148,23 @@ class API:
                 await websocket.receive_text()
                 await self.refresh_active_poll_page()
         except WebSocketDisconnect:
-            await self._handle_websocket_disconnect(websocket)
+            await self._handle_websocket_disconnect(self._controller.ws_manager_results, websocket)
+
+    async def web_socket_admin(self, websocket: WebSocket) -> None:
+        await self._controller.ws_manager_admin.connect(websocket)
+        try:
+            while True:
+                json_data = await websocket.receive_json()
+                if (active_poll := json_data.get("active_poll", False)) is False:
+                    _logger.warning("Websocket got unknown data `%s`. Ignoring.", json_data)
+                    continue
+
+                if active_poll is None:
+                    await self.make_idle()
+                else:
+                    await self.update_poll(active_poll)
+
+                await self.refresh_admin_page()
+                await self.refresh_active_poll_page()
+        except WebSocketDisconnect:
+            await self._handle_websocket_disconnect(self._controller.ws_manager_admin, websocket)

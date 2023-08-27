@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>AkaBlas Wunschkonzert</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/static/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/static/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="/static/favicon/favicon.ico">
+    <meta name="apple-mobile-web-app-title" content="AkaBlas Wunschkonzert">
+    <meta name="application-name" content="AkaBlas Wunschkonzert">
+    <meta name="msapplication-TileColor" content="#001555">
+    <meta name="msapplication-config" content="/static/favicon/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    <link href="{{ url_for('static', path='/styles/admin/table.css') }}" rel="stylesheet"/>
+</head>
+<body>
+<h1>AkaBlas Wunschkonzert: Administration</h1>
+
+<h2>Aktuelle Abstimmung</h2>
+{% set condition = active_poll is not none %}
+<div id="idle" style="display: {{ 'none' if condition else 'block' }}">
+    <h3>Aktuell ist keine Abstimmung aktiv.</h3>
+</div>
+<div id="active-poll" style="display: {{ 'block' if condition else 'none' }}">
+    <h3 id="active-poll-question">{{ active_poll.question if condition else '' }}</h3>
+    <div style="display: flex">
+        <div id="option-one" style="padding: 10px">
+            <div id="option-one-text">{{ active_poll.option_one.text if condition else '' }}</div>
+            <div id="option-one-votes">{{ active_poll.option_one.votes if condition else '' }}</div>
+        </div>
+        <div id="option-two" style="padding: 10px">
+            <div id="option-two-text">{{ active_poll.option_two.text if condition else '' }}</div>
+            <div id="option-two-votes">{{ active_poll.option_two.votes if condition else '' }}</div>
+        </div>
+    </div>
+</div>
+
+<h2>Ergebnis-Seite aktualisieren</h2>
+
+<button id="update-results-page" onclick="updateResultsPage()">Ergebnis-Seite aktualisieren</button>
+
+<h2>Abstimmung setzen</h2>
+
+<button id="make-idle" onclick="makeIdle()">Abstimmungen aussetzen</button>
+
+{% for poll in polls %}
+    <h3 id="question-{{ poll.uid }}">{{ poll.question }}</h3>
+
+    {% set checked = 'checked' if poll.uid if condition and active_poll.uid == poll.uid else '' %}
+    <input type="checkbox" id="update-poll-{{ poll.uid }}" name="update-poll"
+           value="{{ poll.uid }}" onChange="updateActivePoll('{{ poll.uid }}')" {{ checked }}>
+    <label for="update-poll-{{ poll.uid }}">Abstimmung aktivieren</label>
+    <table>
+        <tr>
+            <th>Option</th>
+            <th>Stimmen</th>
+        </tr>
+        <tr>
+            <td id="text-option-one-{{ poll.option_one.uid }}">{{ poll.option_one.text }}</td>
+            <td id="votes-option-one-{{ poll.option_one.uid }}">{{ poll.option_one.votes }}</td>
+        </tr>
+        <tr>
+            <td id="text-option-two-{{ poll.option_two.uid }}">{{ poll.option_two.text }}</td>
+            <td id="votes-option-two-{{ poll.option_two.uid }}">{{ poll.option_two.votes }}</td>
+        </tr>
+    </table>
+{% endfor %}
+</body>
+<script src="{{ url_for('static', path='./scripts/commons.js') }}"></script>
+<script src="{{ url_for('static', path='./scripts/admin/commons.js') }}"></script>
+<script src="{{ url_for('static', path='./scripts/admin/websocket-listen.js') }}"></script>
+<script src="{{ url_for('static', path='./scripts/admin/websocket-send.js') }}"></script>
+</html>

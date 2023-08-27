@@ -24,12 +24,23 @@ class WebSocketManager:
     async def broadcast_idle(self, exclude: Optional[WebSocket] = None) -> None:
         return await self.broadcast_json({"idle": True}, exclude=exclude)
 
+    async def broadcast_poll_update(self, poll: Poll, exclude: Optional[WebSocket] = None) -> None:
+        return await self.broadcast_json({"poll_update": poll.model_dump()}, exclude=exclude)
+
     async def broadcast_json(self, json: Any, exclude: Optional[WebSocket] = None) -> None:
         async with self.__lock:
             await asyncio.gather(
                 *(
-                    connection.send_json(json)
+                    self.send_json(json, connection)
                     for connection in self.active_connections
                     if connection is not exclude
                 )
             )
+
+    async def send_json(self, json: Any, websocket: WebSocket) -> None:
+        try:
+            await websocket.send_json(json)
+        except RuntimeError as exc:
+            if ".send' after sending 'websocket.close'" in str(exc):
+                self.active_connections.discard(websocket)
+                return

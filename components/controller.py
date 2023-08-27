@@ -32,6 +32,7 @@ class Controller:
         self.api = API(self)
         self.ws_manager_voting = WebSocketManager()
         self.ws_manager_results = WebSocketManager()
+        self.ws_manager_admin = WebSocketManager()
         self.persistence: JSONPersistence = persistence
 
         self._polls: dict[str, Poll] = {}

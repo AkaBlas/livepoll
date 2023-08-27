@@ -21,3 +21,28 @@ function build_websocket(endpoint) {
 function exists(element) {
   return typeof element != "undefined" && element != null;
 }
+
+function queryAPI(endpoint, method, data = null) {
+  const url = apiUrl + "/" + endpoint;
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  const body = data ? JSON.stringify(data) : null;
+  return fetch(url, {
+    method: method,
+    headers: headers,
+    body: body,
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error("HTTP error " + response.status);
+    }
+    return response.json();
+  });
+}
+
+function updateResultsPage() {
+  queryAPI("refreshActivePollPage", "PUT").then((data) => {
+    console.log("updateResultsPage");
+    console.log(data);
+  });
+}

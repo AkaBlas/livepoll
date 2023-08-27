@@ -20,13 +20,9 @@ WSocket.onmessage = function (event) {
     document.getElementById("option_two").value =
       jsonData.active_poll.option_two.uid;
     document.getElementById("option_one_label").innerHTML =
-      jsonData.active_poll.option_one.text +
-      ", Stimmen: " +
-      jsonData.active_poll.option_one.votes;
+      jsonData.active_poll.option_one.text;
     document.getElementById("option_two_label").innerHTML =
-      jsonData.active_poll.option_two.text +
-      ", Stimmen: " +
-      jsonData.active_poll.option_two.votes;
+      jsonData.active_poll.option_two.text;
     document.getElementById("option_one").onchange = function () {
       sendVote(jsonData.active_poll.uid);
     };
