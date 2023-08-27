@@ -44,7 +44,7 @@
                 <label id="option_two_label" for="option_two">{{ text }}</label>
             </fieldset>
             {% set voted = (current_option_uid is not none) %}
-            <h2 id="thanks" style="display: {{ 'block' if voted else 'none' }}">Vielen Dank für die
+            <h2 id="thanks" style="visibility: {{ 'inherit' if voted else 'hidden' }}">Vielen Dank für die
                 Teilnahme!</h2>
         </div>
     </div>
