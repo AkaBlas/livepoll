@@ -6,6 +6,7 @@ from typing import Any, Optional, TypeVar, Union
 
 import uvicorn
 from fastapi import FastAPI
+from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 from starlette.websockets import WebSocket
@@ -29,6 +30,9 @@ class Controller:
             redoc_url=None,
             docs_url="/docs" if debug_mode else None,
         )
+        if not debug_mode:
+            # redirect http to https
+            self.fast_api.add_middleware(HTTPSRedirectMiddleware)
         self.api = API(self)
         self.ws_manager_voting = WebSocketManager()
         self.ws_manager_results = WebSocketManager()
