@@ -21,7 +21,14 @@
 </head>
 <body>
 <div class="center">
-    <h1>AkaBlas Wunschkonzert: Abstimmung</h1>
+    <h1>AkaBlas Wunschkonzert</h1>
+    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+        invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam
+        et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est
+        Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
+        diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+        voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+        gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
     <div id="active-poll" style="display: {{ 'block' if active_poll is not none else 'none' }}">
         {% set poll_uid = active_poll.uid if active_poll is not none else '' %}
         <div>
@@ -44,8 +51,11 @@
                 <label id="option_two_label" for="option_two">{{ text }}</label>
             </fieldset>
             {% set voted = (current_option_uid is not none) %}
-            <h2 id="thanks" style="visibility: {{ 'inherit' if voted else 'hidden' }}">Vielen Dank für die
-                Teilnahme!</h2>
+            <div id="thanks" style="visibility: {{ 'inherit' if voted else 'hidden' }}">
+                <h2 id="thanks" style="visibility: {{ 'inherit' if voted else 'hidden' }}">Vielen
+                    Dank für die Teilnahme!</h2>
+                <p>Wir freuen uns darauf, Euch am 30.09. im Audix begrüßen zu dürfen!</p>
+            </div>
         </div>
     </div>
 
