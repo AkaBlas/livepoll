@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from http import HTTPStatus
@@ -39,7 +40,7 @@ class API:
         self._controller.fast_api.get("/activepoll")(self.active_poll_page)
         self._controller.fast_api.get("/admin")(self.admin_page)
 
-    def index_page(
+    async def index_page(
         self, request: Request, poll_votes: Annotated[Optional[str], Cookie()] = None
     ) -> Response:
         poll_votes_object = PollCookie(poll_votes=json.loads(poll_votes) if poll_votes else {})
@@ -60,16 +61,22 @@ class API:
             },
         )
 
-    def active_poll_page(self, request: Request) -> Response:
-        return Jinja2Templates(directory="static").TemplateResponse(
+    async def _refresh_active_poll_with_delay(self, delay: float) -> None:
+        await asyncio.sleep(delay)
+        await self.refresh_active_poll_page()
+
+    async def active_poll_page(self, request: Request) -> Response:
+        out = Jinja2Templates(directory="static").TemplateResponse(
             "activepoll.html.jinja2",
             context={
                 "request": request,
                 "active_poll": self._controller.active_poll,
             },
         )
+        self._controller.create_task(self._refresh_active_poll_with_delay(2))
+        return out
 
-    def admin_page(self, request: Request) -> Response:
+    async def admin_page(self, request: Request) -> Response:
         return Jinja2Templates(directory="static").TemplateResponse(
             "admin.html.jinja2",
             context={

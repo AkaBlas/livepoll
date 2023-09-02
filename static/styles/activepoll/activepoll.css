@@ -1,0 +1,35 @@
+.results-container {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin: 0 auto 0 auto;
+  max-width: 60vw;
+}
+
+.option-container {
+  padding-top: 10px;
+}
+
+.poll_bar_contour {
+  /*margin: 1em 0 1em 0;*/
+  border-color: rgb(165, 181, 222);
+  border-style: solid;
+  border-width: 2.5px;
+  width: 60vw;
+  height: 3em;
+  padding-right: 2ex;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-radius: 3px;
+}
+
+.poll_bar_content {
+  background: linear-gradient(90deg, rgb(0, 68, 151), rgb(165, 181, 222));
+  height: calc(3em - 1px);
+  text-align: right;
+  transition: all 1.5s cubic-bezier(0.55, 0.87, 0.42, 1);
+  animation: cubic-bezier(0.55, 0.87, 0.42, 1) 600ms;
+  animation-timing-function: cubic-bezier(0.55, 0.87, 0.42, 1);
+  animation-duration: 600ms;
+}

@@ -17,6 +17,8 @@
     <meta name="theme-color" content="#ffffff">
     <link href="{{ url_for('static', path='/styles/modern-normalize.css') }}" rel="stylesheet"/>
     <link href="{{ url_for('static', path='/styles/base.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', path='/styles/activepoll/activepoll.css') }}"
+          rel="stylesheet"/>
 </head>
 <body>
 <div class="center">
@@ -25,15 +27,36 @@
         <h1>Aktuell ist keine Abstimmung aktiv.</h1>
     </div>
     <div id="active-poll" style="display: {{ 'block' if condition else 'none' }}">
+        {% if condition %}
+            {% set total_votes = active_poll.option_one.votes + active_poll.option_two.votes %}
+            {% if total_votes == 0 %}
+                {% set total_votes = 1 %}
+            {% endif %}
+            {% set option_one_percentage = 100 * active_poll.option_one.votes / total_votes %}
+            {% set option_two_percentage = 100 * active_poll.option_two.votes / total_votes %}
+        {% else %}
+            {% set option_one_percentage = 0 %}
+            {% set option_two_percentage = 0 %}
+        {% endif %}
+        {% set option_one_percentage = 0 %}
+        {% set option_two_percentage = 0 %}
         <h1 id="active-poll-question">{{ active_poll.question if condition else '' }}</h1>
-        <div style="display: flex">
-            <div id="option-one" style="padding: 10px">
-                <div id="option-one-text">{{ active_poll.option_one.text if condition else '' }}</div>
-                <div id="option-one-votes">{{ active_poll.option_one.votes if condition else '' }}</div>
+        <div class="results-container">
+            <div id="option-one" class="option-container">
+                <h3 id="option-one-text">{{ active_poll.option_one.text if condition else '' }}</h3>
+                <div id="option-one-bar" class="poll_bar_content" style="width: {{ option_one_percentage }}%">
+                    <div id="option-one-percentage" class="poll_bar_contour">
+                        {{ option_one_percentage | round(2) }} %
+                    </div>
+                </div>
             </div>
-            <div id="option-two" style="padding: 10px">
-                <div id="option-two-text">{{ active_poll.option_two.text if condition else '' }}</div>
-                <div id="option-two-votes">{{ active_poll.option_two.votes if condition else '' }}</div>
+            <div id="option-two" class="option-container">
+                <h3 id="option-two-text">{{ active_poll.option_two.text if condition else '' }}</h3>
+                <div id="option-two-bar" class="poll_bar_content" style="width: {{ option_two_percentage }}%">
+                    <div id="option-two-percentage" class="poll_bar_contour">
+                        {{ option_two_percentage | round(2) }} %
+                    </div>
+                </div>
             </div>
         </div>
     </div>
