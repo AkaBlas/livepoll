@@ -61,9 +61,12 @@ class API:
             },
         )
 
-    async def _refresh_active_poll_with_delay(self, delay: float) -> None:
-        await asyncio.sleep(delay)
-        await self.refresh_active_poll_page()
+    def _refresh_active_poll_with_delay(self, delay: float = 1.5) -> None:
+        async def callback() -> None:
+            await asyncio.sleep(delay)
+            await self.refresh_active_poll_page()
+
+        self._controller.create_task(callback())
 
     async def active_poll_page(self, request: Request) -> Response:
         out = Jinja2Templates(directory="static").TemplateResponse(
@@ -73,7 +76,7 @@ class API:
                 "active_poll": self._controller.active_poll,
             },
         )
-        self._controller.create_task(self._refresh_active_poll_with_delay(2))
+        self._refresh_active_poll_with_delay()
         return out
 
     async def admin_page(self, request: Request) -> Response:

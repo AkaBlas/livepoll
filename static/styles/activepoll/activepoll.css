@@ -1,3 +1,7 @@
+.center {
+  max-width: initial;
+}
+
 .results-container {
   display: flex;
   flex-direction: column;
@@ -29,7 +33,4 @@
   height: calc(3em - 1px);
   text-align: right;
   transition: all 1.5s cubic-bezier(0.55, 0.87, 0.42, 1);
-  animation: cubic-bezier(0.55, 0.87, 0.42, 1) 600ms;
-  animation-timing-function: cubic-bezier(0.55, 0.87, 0.42, 1);
-  animation-duration: 600ms;
 }
