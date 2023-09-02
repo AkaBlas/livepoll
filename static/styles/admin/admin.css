@@ -1,0 +1,26 @@
+* {
+  position: relative;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  padding: 5vh 5vw;
+  position: relative;
+  height: 100%;
+  font-size: 0.7em;
+}
+
+.center {
+  max-width: 80ex;
+  width: 95%;
+  max-height: 100%;
+  margin: 0px auto 0px auto;
+  text-align: center;
+  /*position: absolute;*/
+  top: 50%;
+  transform: translateY(-50%);
+  /*padding: 0;*/
+}
