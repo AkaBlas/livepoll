@@ -69,6 +69,7 @@ class Controller:
         else:
             effective_poll = poll
 
+        effective_poll.active = True
         self._active_poll = effective_poll
 
         if effective_poll.uid not in self.polls:
@@ -80,6 +81,8 @@ class Controller:
         )
 
     async def stop_active_poll(self, exclude_websocket: Optional[WebSocket] = None) -> None:
+        if self._active_poll is not None:
+            self._active_poll.active = False
         self._active_poll = None
         self.create_task(self.ws_manager_voting.broadcast_idle(exclude_websocket))
 
@@ -94,6 +97,13 @@ class Controller:
     async def start(self) -> None:
         await self.persistence.initialize()
         self._polls.update(await self.persistence.get_polls())
+        found_active_poll = False
+        for poll in self._polls.values():
+            if not found_active_poll and poll.active:
+                self._active_poll = poll
+                found_active_poll = True
+            else:
+                poll.active = False
         self._running = True
 
     async def stop(self) -> None:

@@ -29,6 +29,7 @@ class Poll(BaseModel):
     question: str
     option_one: PollOption
     option_two: PollOption
+    active: bool = False
 
     def add_vote(self, poll_vote: PollVote) -> None:
         if poll_vote.option_uid == poll_vote.previous_option_uid:
