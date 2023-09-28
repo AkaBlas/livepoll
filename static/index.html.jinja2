@@ -23,7 +23,6 @@
 <div class="center">
     <h1>AkaBlas Wunschkonzert</h1>
     <div id="active-poll" style="display: {{ 'block' if active_poll is not none else 'none' }}">
-        <p>Samstag, 30. September | Einlass 15:30 Uhr<br>Audimax | Universitätsplatz 3, Braunschweig</p>
         {% set poll_uid = active_poll.uid if active_poll is not none else '' %}
         <div>
             <h2 id="active-poll-question">{{ active_poll.question }}</h2>
@@ -47,7 +46,6 @@
             {% set voted = (current_option_uid is not none) %}
             <div id="thanks" style="visibility: {{ 'inherit' if voted else 'hidden' }}">
                 <h2>Vielen Dank für die Teilnahme!</h2>
-                <p>Du möchtest wissen, ob Dein Wunsch in Erfüllung geht?<br>Finde es heraus, am 30.09. im Audimax!</p>
             </div>
         </div>
     </div>
