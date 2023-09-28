@@ -20,7 +20,7 @@ body {
 
 .poll_bar_contour {
   /*margin: 1em 0 1em 0;*/
-  border-color: rgb(255, 247, 177);
+  border-color: rgb(165, 181, 222);
   border-style: solid;
   border-width: 2.5px;
   width: 60vw;
@@ -33,7 +33,7 @@ body {
 }
 
 .poll_bar_content {
-  background: linear-gradient(90deg, rgb(255, 236, 0), rgb(255, 247, 177));
+  background: linear-gradient(90deg, rgb(0, 68, 151), rgb(165, 181, 222));
   height: calc(3em - 1px);
   text-align: right;
   transition: all 1.5s cubic-bezier(0.55, 0.87, 0.42, 1);
